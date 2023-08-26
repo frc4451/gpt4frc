@@ -1,24 +1,17 @@
-from typing import List
 import os
-import re
 from pprint import pprint
-from langchain.document_loaders import PyPDFLoader
-from langchain.document_loaders import PyPDFDirectoryLoader
-
-
-from langchain.schema import Document
 from typing import List
+
+from langchain.chains import AnalyzeDocumentChain, ConversationalRetrievalChain
+from langchain.chains.summarize import load_summarize_chain
+from langchain.chat_models import ChatOpenAI
+from langchain.document_loaders import PyPDFDirectoryLoader, PyPDFLoader
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts.prompt import PromptTemplate
+from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma
-
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts.prompt import PromptTemplate
-from langchain.chains.summarize import load_summarize_chain
-from langchain.chains import AnalyzeDocumentChain
-
 
 
 class GPT4FRC:
@@ -77,9 +70,9 @@ class GPT4FRC:
     def from_chatgpt(
         openai_api_key: str,
         openai_model: str = "gpt-3.5-turbo",
-        openai_args: dict = {},
+        openai_args: dict = None,
         chain_type: str = "stuff",
-        retriever_args: dict = {},
+        retriever_args: dict = None,
         use_memory: bool = False,
         verbose: bool = False,
     ):
@@ -105,6 +98,9 @@ class GPT4FRC:
         )
 
     def ask_question(self, question: str, only_answers: bool = True):
+        """
+        Ask questions to the QA Chain
+        """
         response = self._chain({"question": question})
 
         if only_answers:
@@ -133,7 +129,7 @@ class GPT4FRC:
         documents_path: str,
     ) -> List[Document]:
         if not os.path.exists(documents_path):
-            raise Exception(
+            raise ValueError(
                 f"You need to provide a valid PDF file path. Received :: {documents_path}"
             )
 
