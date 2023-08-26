@@ -20,8 +20,6 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain.chains import AnalyzeDocumentChain
 
 
-SUPPORTED_EMBEDDINGS: dict = {"openai": OpenAIEmbeddings()}
-
 
 class GPT4FRC:
     """
